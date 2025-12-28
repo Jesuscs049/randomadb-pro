@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RandomADB Pro - Procesador de Números Telefónicos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --primary-dark: #5568d3;
+            --secondary: #764ba2;
+            --success: #48bb78;
+            --warning: #ed8936;
+            --danger: #f56565;
+            --info: #4299e1;
+            --dark: #2d3748;
+            --light: #edf2f7;
+            --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --card-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            --button-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--dark);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            font-weight: 800;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .subtitle {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .card-title {
+            font-size: 1.5em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--bg-gradient);
+            border-radius: 2px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid var(--light);
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: 'Courier New', monospace;
+            resize: vertical;
+            transition: all 0.3s;
+            background: #f7fafc;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .counter {
+            margin-top: 10px;
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 0.95em;
+        }
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .btn {
+            padding: 14px 20px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95em;
+            transition: all 0.3s;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background: var(--bg-gradient);
+            box-shadow: var(--button-shadow);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        }
+
+        .btn-operation {
+            background: linear-gradient(135deg, var(--btn-color) 0%, var(--btn-color-dark) 100%);
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-operation.selected {
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
+            transform: scale(1.05);
+        }
+
+        .btn-operation::before {
+            content: '○';
+            font-size: 1.2em;
+        }
+
+        .btn-operation.selected::before {
+            content: '●';
+        }
+
+        .input-group {
+            margin: 15px 0;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        input[type="number"],
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--light);
+            border-radius: 12px;
+            font-size: 14px;
+            transition: all 0.3s;
+            background-color: white;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23667eea' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 36px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #extractorContent {
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        #extractorIcon {
+            transition: transform 0.3s ease;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .action-buttons .btn {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .process-btn {
+            width: 100%;
+            padding: 18px;
+            font-size: 1.1em;
+            margin: 20px 0;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #e6fffa 0%, #b2f5ea 100%);
+            border-left: 4px solid var(--success);
+            padding: 15px;
+            border-radius: 12px;
+            margin: 15px 0;
+        }
+
+        .info-box strong {
+            color: var(--success);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+            
+            .button-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .action-buttons .btn {
+                width: 100%;
+            }
+        }
+
+        /* Animación de carga */
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .processing {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 RandomADB Pro</h1>
+            <p class="subtitle">Herramienta profesional para procesar números telefónicos</p>
+        </header>
+
+        <!-- Extractor de Números (Colapsable) -->
+        <div class="card">
+            <div class="card-title" style="cursor: pointer; user-select: none;" onclick="toggleExtractor()">
+                📱 Extractor de Números Telefónicos 
+                <span id="extractorIcon" style="float: right; font-size: 0.8em;">▼</span>
+            </div>
+            <div id="extractorContent" class="hidden">
+                <div class="input-group">
+                    <label>Pega cualquier texto y extrae automáticamente los números:</label>
+                    <textarea id="textoExtractor" rows="6" placeholder="Ejemplo: Mi número es +57 300 123 4567 o llama al 3001234567. También puedes contactarnos al (1) 234-5678..."></textarea>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
+                    <div class="input-group">
+                        <label>Longitud mínima de dígitos:</label>
+                        <input type="number" id="minDigitos" value="7" min="1" max="15">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Eliminar código de área:</label>
+                        <select id="codigoAreaSelector" onchange="toggleCodigoAreaManual()">
+                            <option value="0">No eliminar</option>
+                            <option value="1">1 dígito</option>
+                            <option value="2">2 dígitos</option>
+                            <option value="3">3 dígitos</option>
+                            <option value="4">4 dígitos</option>
+                            <option value="manual">Cantidad personalizada</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="input-group hidden" id="codigoAreaManual">
+                    <label>Cantidad de dígitos a eliminar:</label>
+                    <input type="number" id="digitosEliminarArea" min="1" max="10" placeholder="Ej: 5">
+                </div>
+                
+                <button class="btn btn-primary" onclick="extraerNumeros()">Extraer Números</button>
+            </div>
+        </div>
+
+        <!-- Procesador Principal -->
+        <div class="card">
+            <div class="card-title">⚙️ Procesador de Números</div>
+            <div class="input-group">
+                <label>Números telefónicos (uno por línea):</label>
+                <textarea id="numeros" rows="10" placeholder="1278885002&#10;1278885005&#10;1278885027"></textarea>
+                <div id="contadorEntrada" class="counter">📊 Números ingresados: 0</div>
+            </div>
+
+            <div class="card-title" style="margin-top: 30px;">🎯 Selecciona una operación:</div>
+            <div class="button-grid">
+                <button class="btn btn-operation" style="--btn-color: #f56565; --btn-color-dark: #e53e3e;" onclick="seleccionarOperacion('eliminar-codigo-area')">Eliminar código de área</button>
+                <button class="btn btn-operation" style="--btn-color: #ed8936; --btn-color-dark: #dd6b20;" onclick="seleccionarOperacion('eliminar-inicio')">Eliminar desde inicio</button>
+                <button class="btn btn-operation" style="--btn-color: #f59e0b; --btn-color-dark: #d97706;" onclick="seleccionarOperacion('eliminar-final')">Eliminar desde final</button>
+                <button class="btn btn-operation" style="--btn-color: #ecc94b; --btn-color-dark: #d69e2e;" onclick="seleccionarOperacion('aleatorizar')">Aleatorizar orden</button>
+                <button class="btn btn-operation" style="--btn-color: #48bb78; --btn-color-dark: #38a169;" onclick="seleccionarOperacion('agregar-inicio')">Agregar al inicio</button>
+                <button class="btn btn-operation" style="--btn-color: #4299e1; --btn-color-dark: #3182ce;" onclick="seleccionarOperacion('agregar-final')">Agregar al final</button>
+                <button class="btn btn-operation" style="--btn-color: #9f7aea; --btn-color-dark: #805ad5;" onclick="seleccionarOperacion('formato-random')">Formato Random</button>
+                <button class="btn btn-operation" style="--btn-color: #667eea; --btn-color-dark: #5568d3;" onclick="seleccionarOperacion('formato-personalizado')">Formato personalizado</button>
+                <button class="btn btn-operation" style="--btn-color: #718096; --btn-color-dark: #4a5568;" onclick="seleccionarOperacion('eliminar-duplicados')">Eliminar duplicados</button>
+            </div>
+
+            <!-- Inputs dinámicos -->
+            <div id="inputsOperacion">
+                <div class="input-group hidden" id="inputCodigoArea">
+                    <label>Código de área a eliminar:</label>
+                    <select id="codigoAreaProcesador">
+                        <option value="1">1 dígito</option>
+                        <option value="2">2 dígitos</option>
+                        <option value="3" selected>3 dígitos</option>
+                        <option value="4">4 dígitos</option>
+                        <option value="manual">Cantidad personalizada</option>
+                    </select>
+                    <input type="number" id="digitosCodigoAreaManual" class="hidden" style="margin-top: 10px;" min="1" max="10" placeholder="Cantidad personalizada">
+                </div>
+                <div class="input-group hidden" id="inputCantidad">
+                    <label>Cantidad de dígitos:</label>
+                    <input type="number" id="cantidadDigitos" min="1" placeholder="Ej: 2">
+                </div>
+                <div class="input-group hidden" id="inputDigitos">
+                    <label>Dígitos a agregar:</label>
+                    <input type="text" id="digitosAgregar" placeholder="Ej: 57">
+                </div>
+                <div class="input-group hidden" id="inputFormato">
+                    <label>Formato personalizado (X = dígito del número):</label>
+                    <input type="text" id="formatoPersonalizado" placeholder="Ej: +XX XX XXXX XXXX">
+                </div>
+            </div>
+
+            <div class="info-box hidden" id="infoRandom">
+                <strong>📌 Formato Random para Autofill:</strong> Convierte tu lista en formato <code>&lt;random(num1|num2|num3)&gt;</code> perfecto para usar con autoclickers y autofill tools.
+            </div>
+
+            <button class="btn btn-primary process-btn" onclick="procesarNumeros()">🚀 Procesar Números</button>
+
+            <div class="input-group">
+                <label>Resultado:</label>
+                <textarea id="resultado" rows="10" readonly></textarea>
+                <div id="contadorResultado" class="counter">📊 Números en resultado: 0</div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-success" onclick="copiarResultados()">📋 Copiar Resultados</button>
+                <button class="btn btn-success" onclick="guardarResultados()">💾 Guardar como TXT</button>
+            </div>
+        </div>
+
+        <!-- Footer con firma -->
+        <footer style="text-align: center; color: white; padding: 20px; margin-top: 40px;">
+            <p style="font-size: 1.2em; font-weight: 600; opacity: 0.9;">Desarrollado por <strong>ADBCASTLE</strong></p>
+            <p style="font-size: 0.9em; opacity: 0.7; margin-top: 5px;">© 2024 - Herramienta Profesional de Procesamiento Telefónico</p>
+        </footer>
+    </div>
+
+    <script>
+        let operacionSeleccionada = '';
+
+        // Función para desplegar/colapsar el extractor
+        function toggleExtractor() {
+            const content = document.getElementById('extractorContent');
+            const icon = document.getElementById('extractorIcon');
+            
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                icon.textContent = '▲';
+            } else {
+                content.classList.add('hidden');
+                icon.textContent = '▼';
+            }
+        }
+
+        function seleccionarOperacion(operacion) {
+            operacionSeleccionada = operacion;
+            
+            // Actualizar visualización de botones
+            document.querySelectorAll('.btn-operation').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+            
+            // Mostrar/ocultar inputs según operación
+            document.getElementById('inputCodigoArea').classList.add('hidden');
+            document.getElementById('inputCantidad').classList.add('hidden');
+            document.getElementById('inputDigitos').classList.add('hidden');
+            document.getElementById('inputFormato').classList.add('hidden');
+            document.getElementById('infoRandom').classList.add('hidden');
+            
+            switch(operacion) {
+                case 'eliminar-codigo-area':
+                    document.getElementById('inputCodigoArea').classList.remove('hidden');
+                    break;
+                case 'eliminar-inicio':
+                case 'eliminar-final':
+                    document.getElementById('inputCantidad').classList.remove('hidden');
+                    break;
+                case 'agregar-inicio':
+                case 'agregar-final':
+                    document.getElementById('inputDigitos').classList.remove('hidden');
+                    break;
+                case 'formato-personalizado':
+                    document.getElementById('inputFormato').classList.remove('hidden');
+                    break;
+                case 'formato-random':
+                    document.getElementById('infoRandom').classList.remove('hidden');
+                    break;
+            }
+        }
+
+        // Toggle para el selector de código de área en procesador
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('codigoAreaProcesador').addEventListener('change', function() {
+                const manualInput = document.getElementById('digitosCodigoAreaManual');
+                if (this.value === 'manual') {
+                    manualInput.classList.remove('hidden');
+                } else {
+                    manualInput.classList.add('hidden');
+                }
+            });
+        });
+
+        function actualizarContador(inputId, contadorId) {
+            const texto = document.getElementById(inputId).value;
+            const numeros = texto.split('\n').filter(n => n.trim() !== '');
+            document.getElementById(contadorId).textContent = `📊 Números ${inputId === 'numeros' ? 'ingresados' : 'en resultado'}: ${numeros.length}`;
+        }
+
+        function toggleCodigoAreaManual() {
+            const selector = document.getElementById('codigoAreaSelector').value;
+            const manualInput = document.getElementById('codigoAreaManual');
+            
+            if (selector === 'manual') {
+                manualInput.classList.remove('hidden');
+            } else {
+                manualInput.classList.add('hidden');
+            }
+        }
+
+        // Extractor de números telefónicos
+        function extraerNumeros() {
+            const texto = document.getElementById('textoExtractor').value;
+            const minDigitos = parseInt(document.getElementById('minDigitos').value) || 7;
+            const codigoAreaSelector = document.getElementById('codigoAreaSelector').value;
+            
+            // Regex mejorado para capturar números telefónicos
+            const regex = /[\+]?[(]?[0-9]{1,4}[)]?[-\s\.]?[(]?[0-9]{1,4}[)]?[-\s\.]?[0-9]{1,5}[-\s\.]?[0-9]{1,5}/g;
+            
+            let numeros = texto.match(regex) || [];
+            
+            // Limpiar números y filtrar por longitud mínima
+            numeros = numeros.map(num => num.replace(/[^\d]/g, ''))
+                             .filter(num => num.length >= minDigitos);
+            
+            // Eliminar duplicados
+            numeros = [...new Set(numeros)];
+            
+            if (numeros.length === 0) {
+                alert('No se encontraron números telefónicos en el texto.');
+                return;
+            }
+            
+            // Eliminar código de área si está seleccionado
+            let digitosEliminar = 0;
+            if (codigoAreaSelector === 'manual') {
+                digitosEliminar = parseInt(document.getElementById('digitosEliminarArea').value) || 0;
+            } else {
+                digitosEliminar = parseInt(codigoAreaSelector) || 0;
+            }
+            
+            if (digitosEliminar > 0) {
+                numeros = numeros.map(num => num.slice(digitosEliminar));
+                // Filtrar números que quedaron muy cortos después de eliminar
+                numeros = numeros.filter(num => num.length >= 6);
+            }
+            
+            // Colocar en el área de procesamiento
+            document.getElementById('numeros').value = numeros.join('\n');
+            actualizarContador('numeros', 'contadorEntrada');
+            
+            const mensaje = digitosEliminar > 0 
+                ? `✅ Se extrajeron ${numeros.length} números únicos (código de área de ${digitosEliminar} dígito${digitosEliminar > 1 ? 's' : ''} eliminado)`
+                : `✅ Se extrajeron ${numeros.length} números telefónicos únicos`;
+            
+            alert(mensaje);
+        }
+
+        function procesarNumeros() {
+            if (!operacionSeleccionada) {
+                alert('⚠️ Por favor, selecciona una operación primero.');
+                return;
+            }
+
+            const numerosTexto = document.getElementById('numeros').value;
+            let numeros = numerosTexto.split('\n')
+                                      .map(n => n.trim())
+                                      .filter(n => n !== '');
+
+            if (numeros.length === 0) {
+                alert('⚠️ Por favor, ingresa números para procesar.');
+                return;
+            }
+
+            let resultados = [];
+
+            switch (operacionSeleccionada) {
+                case 'eliminar-codigo-area':
+                    const selectorArea = document.getElementById('codigoAreaProcesador').value;
+                    let digitosArea = 0;
+                    
+                    if (selectorArea === 'manual') {
+                        digitosArea = parseInt(document.getElementById('digitosCodigoAreaManual').value);
+                        if (!digitosArea || digitosArea < 1) {
+                            alert('⚠️ Por favor, ingresa una cantidad válida de dígitos.');
+                            return;
+                        }
+                    } else {
+                        digitosArea = parseInt(selectorArea);
+                    }
+                    
+                    resultados = numeros.map(numero => numero.slice(digitosArea));
+                    break;
+
+                case 'aleatorizar':
+                    resultados = aleatorizar(numeros);
+                    break;
+
+                case 'eliminar-inicio':
+                    const cantInicio = parseInt(document.getElementById('cantidadDigitos').value);
+                    if (!cantInicio || cantInicio < 1) {
+                        alert('⚠️ Por favor, ingresa una cantidad válida de dígitos.');
+                        return;
+                    }
+                    resultados = numeros.map(numero => numero.slice(cantInicio));
+                    break;
+
+                case 'eliminar-final':
+                    const cantFinal = parseInt(document.getElementById('cantidadDigitos').value);
+                    if (!cantFinal || cantFinal < 1) {
+                        alert('⚠️ Por favor, ingresa una cantidad válida de dígitos.');
+                        return;
+                    }
+                    resultados = numeros.map(numero => numero.slice(0, -cantFinal));
+                    break;
+
+                case 'agregar-inicio':
+                    const digitosInicio = document.getElementById('digitosAgregar').value.trim();
+                    if (!digitosInicio) {
+                        alert('⚠️ Por favor, ingresa los dígitos a agregar.');
+                        return;
+                    }
+                    resultados = numeros.map(numero => digitosInicio + numero);
+                    break;
+
+                case 'agregar-final':
+                    const digitosFinal = document.getElementById('digitosAgregar').value.trim();
+                    if (!digitosFinal) {
+                        alert('⚠️ Por favor, ingresa los dígitos a agregar.');
+                        return;
+                    }
+                    resultados = numeros.map(numero => numero + digitosFinal);
+                    break;
+
+                case 'formato-random':
+                    // NUEVA FUNCIÓN: Formato Random
+                    const numerosLimpios = numeros.map(n => n.trim()).filter(n => n);
+                    resultados = [`<random(${numerosLimpios.join('|')})>`];
+                    break;
+
+                case 'formato-personalizado':
+                    const formato = document.getElementById('formatoPersonalizado').value.trim();
+                    if (!formato) {
+                        alert('⚠️ Por favor, ingresa un formato personalizado.');
+                        return;
+                    }
+                    resultados = aplicarFormatoPersonalizado(numeros, formato);
+                    break;
+
+                case 'eliminar-duplicados':
+                    resultados = [...new Set(numeros)];
+                    break;
+            }
+
+            // CORRECCIÓN: Limpiar espacios al final
+            resultados = resultados.map(r => r.trim());
+
+            document.getElementById('resultado').value = resultados.join('\n');
+            actualizarContador('resultado', 'contadorResultado');
+
+            // Animación de éxito
+            const resultadoTextarea = document.getElementById('resultado');
+            resultadoTextarea.classList.add('processing');
+            setTimeout(() => resultadoTextarea.classList.remove('processing'), 800);
+        }
+
+        function aleatorizar(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        function aplicarFormatoPersonalizado(numeros, formato) {
+            return numeros.map(numero => {
+                let numeroLimpio = numero.replace(/\D/g, '');
+                let resultado = '';
+                let indiceNumero = 0;
+                
+                for (let i = 0; i < formato.length; i++) {
+                    if (formato[i] === 'X' && indiceNumero < numeroLimpio.length) {
+                        resultado += numeroLimpio[indiceNumero];
+                        indiceNumero++;
+                    } else if (formato[i] !== 'X') {
+                        resultado += formato[i];
+                    }
+                }
+                
+                return resultado;
+            });
+        }
+
+        function copiarResultados() {
+            const resultado = document.getElementById('resultado');
+            if (!resultado.value) {
+                alert('⚠️ No hay resultados para copiar.');
+                return;
+            }
+            
+            resultado.select();
+            document.execCommand('copy');
+            
+            // Feedback visual
+            const btn = event.target;
+            const textoOriginal = btn.textContent;
+            btn.textContent = '✅ Copiado!';
+            setTimeout(() => btn.textContent = textoOriginal, 2000);
+        }
+
+        function guardarResultados() {
+            const resultados = document.getElementById('resultado').value;
+            if (!resultados) {
+                alert('⚠️ No hay resultados para guardar.');
+                return;
+            }
+            
+            const blob = new Blob([resultados], { type: 'text/plain;charset=utf-8' });
+            const a = document.createElement('a');
+            const fecha = new Date().toISOString().slice(0, 10);
+            a.href = URL.createObjectURL(blob);
+            a.download = `numeros_${fecha}.txt`;
+            a.click();
+            URL.revokeObjectURL(a.href);
+        }
+
+        // Event listeners
+        document.getElementById('numeros').addEventListener('input', () => {
+            actualizarContador('numeros', 'contadorEntrada');
+        });
+
+        document.getElementById('resultado').addEventListener('input', () => {
+            actualizarContador('resultado', 'contadorResultado');
+        });
+
+        // Inicializar contadores
+        actualizarContador('numeros', 'contadorEntrada');
+        actualizarContador('resultado', 'contadorResultado');
+    </script>
+</body>
+</html>
