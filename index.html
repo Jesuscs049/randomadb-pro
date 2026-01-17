@@ -349,6 +349,7 @@
                 <button class="btn btn-operation" style="--btn-color: #48bb78; --btn-color-dark: #38a169;" onclick="seleccionarOperacion('agregar-inicio')">Agregar al inicio</button>
                 <button class="btn btn-operation" style="--btn-color: #4299e1; --btn-color-dark: #3182ce;" onclick="seleccionarOperacion('agregar-final')">Agregar al final</button>
                 <button class="btn btn-operation" style="--btn-color: #9f7aea; --btn-color-dark: #805ad5;" onclick="seleccionarOperacion('formato-random')">Formato Random</button>
+                <button class="btn btn-operation" style="--btn-color: #8b5cf6; --btn-color-dark: #7c3aed;" onclick="seleccionarOperacion('formato-array')">Formato Array</button>
                 <button class="btn btn-operation" style="--btn-color: #667eea; --btn-color-dark: #5568d3;" onclick="seleccionarOperacion('formato-personalizado')">Formato personalizado</button>
                 <button class="btn btn-operation" style="--btn-color: #718096; --btn-color-dark: #4a5568;" onclick="seleccionarOperacion('eliminar-duplicados')">Eliminar duplicados</button>
             </div>
@@ -382,6 +383,10 @@
 
             <div class="info-box hidden" id="infoRandom">
                 <strong>📌 Formato Random para Autofill:</strong> Convierte tu lista en formato <code>&lt;random(num1|num2|num3)&gt;</code> perfecto para usar con autoclickers y autofill tools.
+            </div>
+
+            <div class="info-box hidden" id="infoArray" style="background: linear-gradient(135deg, #faf5ff 0%, #e9d5ff 100%); border-left: 4px solid #8b5cf6;">
+                <strong>📌 Formato Array:</strong> Convierte tu lista en formato de array con comillas: <code>"num1","num2","num3"</code> perfecto para programación y bases de datos.
             </div>
 
             <button class="btn btn-primary process-btn" onclick="procesarNumeros()">🚀 Procesar Números</button>
@@ -437,6 +442,7 @@
             document.getElementById('inputDigitos').classList.add('hidden');
             document.getElementById('inputFormato').classList.add('hidden');
             document.getElementById('infoRandom').classList.add('hidden');
+            document.getElementById('infoArray').classList.add('hidden');
             
             switch(operacion) {
                 case 'eliminar-codigo-area':
@@ -455,6 +461,9 @@
                     break;
                 case 'formato-random':
                     document.getElementById('infoRandom').classList.remove('hidden');
+                    break;
+                case 'formato-array':
+                    document.getElementById('infoArray').classList.remove('hidden');
                     break;
             }
         }
@@ -616,6 +625,12 @@
                     // NUEVA FUNCIÓN: Formato Random
                     const numerosLimpios = numeros.map(n => n.trim()).filter(n => n);
                     resultados = [`<random(${numerosLimpios.join('|')})>`];
+                    break;
+
+                case 'formato-array':
+                    // NUEVA FUNCIÓN: Formato Array
+                    const numerosArray = numeros.map(n => n.trim()).filter(n => n);
+                    resultados = [numerosArray.map(n => `"${n}"`).join(',')];
                     break;
 
                 case 'formato-personalizado':
