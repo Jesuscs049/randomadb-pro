@@ -386,7 +386,7 @@
             </div>
 
             <div class="info-box hidden" id="infoArray" style="background: linear-gradient(135deg, #faf5ff 0%, #e9d5ff 100%); border-left: 4px solid #8b5cf6;">
-                <strong>📌 Formato Array:</strong> Convierte tu lista en formato de array con comillas: <code>"num1","num2","num3"</code> perfecto para programación y bases de datos.
+                <strong>📌 Formato Array:</strong> Convierte tu lista en formato de array con comillas y saltos de línea: <code>"num1",<br>"num2",<br>"num3",</code> perfecto para programación y bases de datos.
             </div>
 
             <button class="btn btn-primary process-btn" onclick="procesarNumeros()">🚀 Procesar Números</button>
@@ -630,7 +630,7 @@
                 case 'formato-array':
                     // NUEVA FUNCIÓN: Formato Array
                     const numerosArray = numeros.map(n => n.trim()).filter(n => n);
-                    resultados = [numerosArray.map(n => `"${n}"`).join(',')];
+                    resultados = numerosArray.map(n => `"${n}",`);
                     break;
 
                 case 'formato-personalizado':
